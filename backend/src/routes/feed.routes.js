@@ -3,7 +3,7 @@ const router = express.Router();
 const ctrl = require("../controllers/feed.controller");
 const auth = require("../middleware/auth.middleware");
 
-// 📌 Activity Feed
+// Get user feed (latest reviews + lists)
 router.get("/", auth, ctrl.getFeed);
 
 module.exports = router;
