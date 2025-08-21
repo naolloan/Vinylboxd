@@ -1,2 +1,2 @@
 # Vinylboxd
-Env not set yet
+feed logic left
