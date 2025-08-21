@@ -3,10 +3,16 @@ const router = express.Router();
 const ctrl = require("../controllers/lists.controller");
 const auth = require("../middleware/auth.middleware");
 
-// 📌 Lists
+// Create a new list
 router.post("/", auth, ctrl.createList);
-router.get("/user/:userId", ctrl.getUserLists);
-router.post("/:listId/items", auth, ctrl.addItemToList);
-router.get("/:listId/items", ctrl.getListItems);
+
+// Get all lists for logged-in user
+router.get("/", auth, ctrl.getLists);
+
+// Get a single list by ID
+router.get("/:listId", auth, ctrl.getListById);
+
+// Delete a list
+router.delete("/:listId", auth, ctrl.deleteList);
 
 module.exports = router;

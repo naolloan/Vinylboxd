@@ -3,13 +3,13 @@ const router = express.Router();
 const ctrl = require("../controllers/reviews.controller");
 const auth = require("../middleware/auth.middleware");
 
-// Create a review
+// Create review
 router.post("/", auth, ctrl.createReview);
 
-// Get reviews for an album
-router.get("/albums/:albumId", ctrl.getAlbumReviews);
+// Get reviews for a target (album, song, or artist)
+router.get("/:targetType/:targetId", ctrl.getReviews);
 
-// Get reviews for a song
-router.get("/songs/:songId", ctrl.getSongReviews);
+// Delete review
+router.delete("/:reviewId", auth, ctrl.deleteReview);
 
 module.exports = router;

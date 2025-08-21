@@ -1,67 +1,82 @@
-const { List, ListItem, Album } = require("../models");
+const { List } = require("../models");
 
-// Create a new list
 exports.createList = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { title, description } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
 
     const list = await List.create({
-      userId: req.user.id,
-      name,
+      title,
       description,
+      userId: req.user.id, // assuming user is authenticated
     });
 
     res.status(201).json(list);
   } catch (err) {
-    res.status(500).json({ message: "Failed to create list", error: err.message });
+    res.status(500).json({
+      message: "Failed to create list",
+      error: err.message,
+    });
   }
 };
 
-// Get all lists for a specific user
-exports.getUserLists = async (req, res) => {
+exports.getLists = async (req, res) => {
   try {
-    const { userId } = req.params;
-
     const lists = await List.findAll({
-      where: { userId },
-      include: [{ model: ListItem, include: [Album] }],
+      where: { userId: req.user.id },
     });
-
     res.json(lists);
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch lists", error: err.message });
+    res.status(500).json({
+      message: "Failed to fetch lists",
+      error: err.message,
+    });
   }
 };
 
-// Add an item (album) to a list
-exports.addItemToList = async (req, res) => {
+exports.getListById = async (req, res) => {
   try {
-    const { listId } = req.params;
-    const { albumId } = req.body;
-
-    const item = await ListItem.create({
-      listId,
-      albumId,
+    const list = await List.findOne({
+      where: {
+        id: req.params.listId,
+        userId: req.user.id,
+      },
     });
 
-    res.status(201).json(item);
+    if (!list) {
+      return res.status(404).json({ message: "List not found" });
+    }
+
+    res.json(list);
   } catch (err) {
-    res.status(500).json({ message: "Failed to add item to list", error: err.message });
+    res.status(500).json({
+      message: "Failed to fetch list",
+      error: err.message,
+    });
   }
 };
 
-// Get items in a list
-exports.getListItems = async (req, res) => {
+exports.deleteList = async (req, res) => {
   try {
-    const { listId } = req.params;
-
-    const items = await ListItem.findAll({
-      where: { listId },
-      include: [Album],
+    const deleted = await List.destroy({
+      where: {
+        id: req.params.listId,
+        userId: req.user.id,
+      },
     });
 
-    res.json(items);
+    if (!deleted) {
+      return res.status(404).json({ message: "List not found or not yours" });
+    }
+
+    res.json({ message: "List deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch list items", error: err.message });
+    res.status(500).json({
+      message: "Failed to delete list",
+      error: err.message,
+    });
   }
 };
