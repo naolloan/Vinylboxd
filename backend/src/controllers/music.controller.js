@@ -1,56 +1,55 @@
 const { Artist, Album, Song } = require("../models");
 
-exports.createArtist = async (req, res, next) => {
+exports.createArtist = async (req, res) => {
   try {
-    const artist = await Artist.create(req.body);
-    res.status(201).json(artist);
-  } catch (err) { next(err); }
+    const artist = await Artist.create({ name: req.body.name });
+    res.json(artist);
+  } catch (err) {
+    res.status(400).json({ message: "Failed to create artist", error: err.message });
+  }
 };
 
-exports.listArtists = async (_req, res, next) => {
+exports.listArtists = async (req, res) => {
   try {
-    const artists = await Artist.findAll({ order: [["createdAt","DESC"]] });
+    const artists = await Artist.findAll();
     res.json(artists);
-  } catch (err) { next(err); }
+  } catch (err) {
+    res.status(500).json({ message: "Failed to list artists", error: err.message });
+  }
 };
 
-exports.createAlbum = async (req, res, next) => {
+exports.createAlbum = async (req, res) => {
   try {
-    const { artistId } = req.body;
-    if (!artistId) return res.status(400).json({ message: "artistId required" });
-    const album = await Album.create(req.body);
-    res.status(201).json(album);
-  } catch (err) { next(err); }
+    const { title, artistId } = req.body;
+    const artist = await Artist.findByPk(artistId);
+    if (!artist) return res.status(404).json({ message: "Artist not found" });
+
+    const album = await Album.create({ title, artistId });
+    res.json(album);
+  } catch (err) {
+    res.status(400).json({ message: "Failed to create album", error: err.message });
+  }
 };
 
-exports.getAlbum = async (req, res, next) => {
+exports.getAlbum = async (req, res) => {
   try {
-    const album = await Album.findByPk(req.params.albumId, { include: [Artist, Song] });
+    const album = await Album.findByPk(req.params.albumId, { include: [Song] });
     if (!album) return res.status(404).json({ message: "Album not found" });
     res.json(album);
-  } catch (err) { next(err); }
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch album", error: err.message });
+  }
 };
 
-exports.createSong = async (req, res, next) => {
+exports.createSong = async (req, res) => {
   try {
-    const { albumId } = req.body;
-    if (!albumId) return res.status(400).json({ message: "albumId required" });
-    const song = await Song.create(req.body);
-    res.status(201).json(song);
-  } catch (err) { next(err); }
-};
+    const { title, albumId } = req.body;
+    const album = await Album.findByPk(albumId);
+    if (!album) return res.status(404).json({ message: "Album not found" });
 
-exports.search = async (req, res, next) => {
-  try {
-    const { q } = req.query;
-    if (!q) return res.json({ artists: [], albums: [], songs: [] });
-
-    const like = { [require("sequelize").Op.iLike]: `%${q}%` };
-    const [artists, albums, songs] = await Promise.all([
-      Artist.findAll({ where: { name: like }, limit: 20 }),
-      Album.findAll({ where: { title: like }, limit: 20 }),
-      Song.findAll({ where: { title: like }, limit: 20 }),
-    ]);
-    res.json({ artists, albums, songs });
-  } catch (err) { next(err); }
+    const song = await Song.create({ title, albumId });
+    res.json(song);
+  } catch (err) {
+    res.status(400).json({ message: "Failed to create song", error: err.message });
+  }
 };

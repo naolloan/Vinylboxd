@@ -1,73 +1,60 @@
-const { Review, ActivityFeed, User } = require("../models");
+// backend/src/controllers/review.controller.js
+const { Review, Album, Song } = require("../models");
 
-exports.createReview = async (req, res, next) => {
+exports.createReview = async (req, res) => {
   try {
-    const { targetType, targetId, rating, reviewText } = req.body;
-    if (!targetType || !targetId || rating == null)
-      return res.status(400).json({ message: "targetType, targetId, rating required" });
+    const { albumId, songId, rating, comment } = req.body;
+
+    let targetType, targetId;
+
+    if (albumId) {
+      // make sure album exists
+      const album = await Album.findByPk(albumId);
+      if (!album) return res.status(404).json({ message: "Album not found" });
+      targetType = "album";
+      targetId = albumId;
+    } else if (songId) {
+      // make sure song exists
+      const song = await Song.findByPk(songId);
+      if (!song) return res.status(404).json({ message: "Song not found" });
+      targetType = "song";
+      targetId = songId;
+    } else {
+      return res.status(400).json({ message: "Must provide albumId or songId" });
+    }
 
     const review = await Review.create({
-      userId: req.user.id, targetType, targetId, rating, reviewText
-    });
-
-    await ActivityFeed.create({
       userId: req.user.id,
-      actionType: "reviewed",
-      subjectType: "review",
-      subjectId: review.id,
-      metadata: { targetType, targetId, rating }
+      targetType,
+      targetId,
+      rating,
+      comment,
     });
 
     res.status(201).json(review);
-  } catch (err) { next(err); }
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create review", error: err.message });
+  }
 };
 
-exports.updateReview = async (req, res, next) => {
+exports.getAlbumReviews = async (req, res) => {
   try {
-    const { reviewId } = req.params;
-    const review = await Review.findByPk(reviewId);
-    if (!review) return res.status(404).json({ message: "Review not found" });
-    if (review.userId !== req.user.id) return res.status(403).json({ message: "Forbidden" });
-
-    const { rating, reviewText } = req.body;
-    if (rating != null) review.rating = rating;
-    if (reviewText != null) review.reviewText = reviewText;
-    await review.save();
-    res.json(review);
-  } catch (err) { next(err); }
-};
-
-exports.deleteReview = async (req, res, next) => {
-  try {
-    const { reviewId } = req.params;
-    const review = await Review.findByPk(reviewId);
-    if (!review) return res.status(404).json({ message: "Review not found" });
-    if (review.userId !== req.user.id) return res.status(403).json({ message: "Forbidden" });
-
-    await review.destroy();
-    res.json({ message: "Deleted" });
-  } catch (err) { next(err); }
-};
-
-exports.getReviewsForTarget = async (req, res, next) => {
-  try {
-    const { targetType, targetId } = req.params;
     const reviews = await Review.findAll({
-      where: { targetType, targetId },
-      include: [{ model: User, attributes: ["id","username","avatarUrl"] }],
-      order: [["createdAt","DESC"]]
+      where: { targetType: "album", targetId: req.params.albumId },
     });
     res.json(reviews);
-  } catch (err) { next(err); }
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch reviews", error: err.message });
+  }
 };
 
-exports.getUserReviews = async (req, res, next) => {
+exports.getSongReviews = async (req, res) => {
   try {
-    const { userId } = req.params;
     const reviews = await Review.findAll({
-      where: { userId },
-      order: [["createdAt","DESC"]]
+      where: { targetType: "song", targetId: req.params.songId },
     });
     res.json(reviews);
-  } catch (err) { next(err); }
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch reviews", error: err.message });
+  }
 };

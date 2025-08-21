@@ -1,12 +1,16 @@
 const { ActivityFeed, User } = require("../models");
 
-exports.getFeed = async (req, res, next) => {
+// Get activity feed for the logged-in user
+exports.getFeed = async (req, res) => {
   try {
-    const items = await ActivityFeed.findAll({
-      include: [{ model: User, attributes: ["id","username","avatarUrl"] }],
-      order: [["createdAt","DESC"]],
-      limit: 100
+    const feed = await ActivityFeed.findAll({
+      where: { userId: req.user.id },
+      include: [{ model: User, attributes: ["id", "username"] }],
+      order: [["createdAt", "DESC"]],
     });
-    res.json(items);
-  } catch (err) { next(err); }
+
+    res.json(feed);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch activity feed", error: err.message });
+  }
 };
