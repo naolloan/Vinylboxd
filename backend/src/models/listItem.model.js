@@ -1,6 +1,6 @@
-const { DataTypes } = require("sequelize");
+import { DataTypes } from "sequelize";
 
-module.exports = (sequelize) => {
+export default (sequelize) => {
   const ListItem = sequelize.define("ListItem", {
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
     targetType: { type: DataTypes.ENUM("album", "song"), allowNull: false },

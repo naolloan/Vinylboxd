@@ -1,6 +1,6 @@
-const { Artist, Album, Song } = require("../models");
+import { Artist, Album, Song } from "../models/index.js";
 
-exports.createArtist = async (req, res) => {
+export const createArtist = async (req, res) => {
   try {
     const artist = await Artist.create({ name: req.body.name });
     res.json(artist);
@@ -9,7 +9,7 @@ exports.createArtist = async (req, res) => {
   }
 };
 
-exports.listArtists = async (req, res) => {
+export const listArtists = async (req, res) => {
   try {
     const artists = await Artist.findAll();
     res.json(artists);
@@ -18,7 +18,7 @@ exports.listArtists = async (req, res) => {
   }
 };
 
-exports.createAlbum = async (req, res) => {
+export const createAlbum = async (req, res) => {
   try {
     const { title, artistId } = req.body;
     const artist = await Artist.findByPk(artistId);
@@ -31,7 +31,7 @@ exports.createAlbum = async (req, res) => {
   }
 };
 
-exports.getAlbum = async (req, res) => {
+export const getAlbum = async (req, res) => {
   try {
     const album = await Album.findByPk(req.params.albumId, { include: [Song] });
     if (!album) return res.status(404).json({ message: "Album not found" });
@@ -41,7 +41,7 @@ exports.getAlbum = async (req, res) => {
   }
 };
 
-exports.createSong = async (req, res) => {
+export const createSong = async (req, res) => {
   try {
     const { title, albumId } = req.body;
     const album = await Album.findByPk(albumId);

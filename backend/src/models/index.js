@@ -1,15 +1,27 @@
-const sequelize = require("../config/db");
+// src/models/index.js
+import sequelize from "../config/db.js";
 
 // Import model factories
-const User = require("./user.model")(sequelize);
-const Artist = require("./artist.model")(sequelize);
-const Album = require("./album.model")(sequelize);
-const Song = require("./song.model")(sequelize);
-const Review = require("./review.model")(sequelize);
-const List = require("./list.model")(sequelize);
-const ListItem = require("./listItem.model")(sequelize);
-const Follower = require("./follower.model")(sequelize);
-const ActivityFeed = require("./activityFeed.model")(sequelize);
+import UserFactory from "./user.model.js";
+import ArtistFactory from "./artist.model.js";
+import AlbumFactory from "./album.model.js";
+import SongFactory from "./song.model.js";
+import ReviewFactory from "./review.model.js";
+import ListFactory from "./list.model.js";
+import ListItemFactory from "./listItem.model.js";
+import FollowerFactory from "./follower.model.js";
+import ActivityFeedFactory from "./activityFeed.model.js";
+
+// Initialize models
+const User = UserFactory(sequelize);
+const Artist = ArtistFactory(sequelize);
+const Album = AlbumFactory(sequelize);
+const Song = SongFactory(sequelize);
+const Review = ReviewFactory(sequelize);
+const List = ListFactory(sequelize);
+const ListItem = ListItemFactory(sequelize);
+const Follower = FollowerFactory(sequelize);
+const ActivityFeed = ActivityFeedFactory(sequelize);
 
 // Associations
 
@@ -37,20 +49,21 @@ User.belongsToMany(User, {
   as: "Followers",
   through: Follower,
   foreignKey: "followingId",
-  otherKey: "followerId"
+  otherKey: "followerId",
 });
 User.belongsToMany(User, {
   as: "Following",
   through: Follower,
   foreignKey: "followerId",
-  otherKey: "followingId"
+  otherKey: "followingId",
 });
 
 // Activity
 User.hasMany(ActivityFeed, { foreignKey: "userId", onDelete: "CASCADE" });
 ActivityFeed.belongsTo(User, { foreignKey: "userId" });
 
-module.exports = {
+// ✅ Export models and sequelize
+export {
   sequelize,
   User,
   Artist,

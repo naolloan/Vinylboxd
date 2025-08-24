@@ -1,6 +1,6 @@
-const { DataTypes } = require("sequelize");
+import { DataTypes } from "sequelize";
 
-module.exports = (sequelize) => {
+export default (sequelize) => {
   const Album = sequelize.define("Album", {
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
     title: { type: DataTypes.STRING, allowNull: false },
@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
     type: { type: DataTypes.ENUM("album", "ep", "single"), allowNull: false, defaultValue: "album" },
     label: { type: DataTypes.STRING },
     producer: { type: DataTypes.STRING },
-    runtimeSec: { type: DataTypes.INTEGER }, // total runtime in seconds
+    runtimeSec: { type: DataTypes.INTEGER },
   }, { tableName: "albums", timestamps: true });
 
   return Album;

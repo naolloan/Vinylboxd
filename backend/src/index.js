@@ -1,16 +1,18 @@
-require("dotenv").config();
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+import dotenv from "dotenv";
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
 
-const { sequelize } = require("./models");
+import { sequelize } from "./models/index.js";
 
 // Routes
-const authRoutes = require("./routes/auth.routes");
-const musicRoutes = require("./routes/music.routes");
-const reviewsRoutes = require("./routes/reviews.routes");
-const listsRoutes = require("./routes/lists.routes");
-const feedRoutes = require("./routes/feed.routes");
+import authRoutes from "./routes/auth.routes.js";
+import musicRoutes from "./routes/music.routes.js";
+import reviewsRoutes from "./routes/reviews.routes.js";
+import listsRoutes from "./routes/lists.routes.js";
+import feedRoutes from "./routes/feed.routes.js";
+
+dotenv.config();
 
 const app = express();
 
@@ -33,7 +35,8 @@ app.get("/", (req, res) => {
 // Start server
 const PORT = process.env.PORT || 4000;
 
-sequelize.sync({ alter: true }) // sync models to DB
+sequelize
+  .sync({ alter: true }) // sync models to DB
   .then(() => {
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);

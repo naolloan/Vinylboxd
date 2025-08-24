@@ -1,6 +1,6 @@
-const { DataTypes } = require("sequelize");
+import { DataTypes } from "sequelize";
 
-module.exports = (sequelize) => {
+export default (sequelize) => {
   const User = sequelize.define("User", {
     id: {
       type: DataTypes.UUID,
@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-  });
+  }, { tableName: "users", timestamps: true });
 
   return User;
 };

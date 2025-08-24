@@ -1,6 +1,6 @@
-const { Review } = require("../models");
+import { Review } from "../models/index.js";
 
-exports.createReview = async (req, res) => {
+export const createReview = async (req, res) => {
   try {
     const { content, rating, targetType, targetId } = req.body;
 
@@ -27,7 +27,7 @@ exports.createReview = async (req, res) => {
   }
 };
 
-exports.getReviews = async (req, res) => {
+export const getReviews = async (req, res) => {
   try {
     const { targetType, targetId } = req.params;
 
@@ -44,7 +44,7 @@ exports.getReviews = async (req, res) => {
   }
 };
 
-exports.deleteReview = async (req, res) => {
+export const deleteReview = async (req, res) => {
   try {
     const deleted = await Review.destroy({
       where: {

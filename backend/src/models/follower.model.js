@@ -1,6 +1,6 @@
-const { DataTypes } = require("sequelize");
+import { DataTypes } from "sequelize";
 
-module.exports = (sequelize) => {
+export default (sequelize) => {
   const Follower = sequelize.define("Follower", {
     followerId: { type: DataTypes.UUID, allowNull: false, primaryKey: true },
     followingId: { type: DataTypes.UUID, allowNull: false, primaryKey: true },

@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import * as ctrl from "../controllers/reviews.controller.js";
+import auth from "../middleware/auth.middleware.js";
+
 const router = express.Router();
-const ctrl = require("../controllers/reviews.controller");
-const auth = require("../middleware/auth.middleware");
 
 // Create review
 router.post("/", auth, ctrl.createReview);
@@ -12,4 +13,4 @@ router.get("/:targetType/:targetId", ctrl.getReviews);
 // Delete review
 router.delete("/:reviewId", auth, ctrl.deleteReview);
 
-module.exports = router;
+export default router;

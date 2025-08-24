@@ -1,6 +1,6 @@
-const { DataTypes } = require("sequelize");
+import { DataTypes } from "sequelize";
 
-module.exports = (sequelize) => {
+export default (sequelize) => {
   const ActivityFeed = sequelize.define("ActivityFeed", {
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
     actionType: { type: DataTypes.ENUM("logged", "reviewed", "liked", "followed", "listed"), allowNull: false },

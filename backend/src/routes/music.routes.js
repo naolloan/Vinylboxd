@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import * as ctrl from "../controllers/music.controller.js";
+import auth from "../middleware/auth.middleware.js";
+
 const router = express.Router();
-const ctrl = require("../controllers/music.controller");
-const auth = require("../middleware/auth.middleware");
 
 // 🎤 Artists
 router.get("/artists", ctrl.listArtists);
@@ -14,7 +15,7 @@ router.post("/albums", auth, ctrl.createAlbum);
 // 🎶 Songs
 router.post("/songs", auth, ctrl.createSong);
 
-// 🔍 Search
-//router.get("/search", ctrl.search);
+// 🔍 Search (optional)
+// router.get("/search", ctrl.search);
 
-module.exports = router;
+export default router;

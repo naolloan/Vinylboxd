@@ -1,9 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const ctrl = require("../controllers/feed.controller");
-const auth = require("../middleware/auth.middleware");
+import express from "express";
+import ctrl from "../controllers/feed.controller.js";
+import auth from "../middleware/auth.middleware.js";
 
-// Get user feed (latest reviews + lists)
+const router = express.Router();
+
 router.get("/", auth, ctrl.getFeed);
 
-module.exports = router;
+export default router;
